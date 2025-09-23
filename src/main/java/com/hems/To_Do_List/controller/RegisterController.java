@@ -9,13 +9,11 @@
     import org.springframework.security.authentication.AuthenticationManager;
     import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
     import org.springframework.security.core.Authentication;
-    import org.springframework.web.bind.annotation.GetMapping;
-    import org.springframework.web.bind.annotation.PostMapping;
-    import org.springframework.web.bind.annotation.RequestBody;
-    import org.springframework.web.bind.annotation.RestController;
+    import org.springframework.web.bind.annotation.*;
 
     import java.util.List;
-
+    import java.util.Map;
+    @CrossOrigin(origins = "http://localhost:5173")
     @RestController
     public class RegisterController {
         @Autowired
@@ -24,7 +22,7 @@
         private JwtService jwtService;
         @Autowired
         AuthenticationManager authenticationManager;
-        @PostMapping("register")
+        @PostMapping("/register")
         public ResponseEntity<String> addUser(@RequestBody Register registerId){
             Register savedUser = registerService.addUser(registerId);
 
@@ -35,25 +33,26 @@
             }
 
         }
-        @GetMapping("registers")
+        @GetMapping("/registers")
         public List<Register> addUser(){
             return registerService.getUsers();
 
         }
 
-        @PostMapping("login")
-        public String login(@RequestBody Register user){
+        @PostMapping("/login")
+        public ResponseEntity<?> login(@RequestBody Register user){
             Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
             if(authentication.isAuthenticated()){
-
-                return jwtService.generateToken(user.getUsername());
-            }else{
-                return "failer";
+                String token = jwtService.generateToken(user.getUsername());
+                return ResponseEntity.ok(Map.of("token", token));  // ✅ frontend expects JSON
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
             }
         }
 
-        
+
+
 
     }

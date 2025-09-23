@@ -25,24 +25,24 @@ import java.util.function.Function;
 
 public class JwtService {
 
-    private static final String SECRET = "TmV3U2VjcmV0S2V5Rm9ySldUU2lnbmluZ1B1cnBvc2VzMTIzNDU2Nzg=\r\n";
+    private static final String SECRET = "TmV3U2VjcmV0S2V5Rm9ySldUU2lnbmluZ1B1cnBvc2VzMTIzNDU2Nzg=";
 
-    private String secretKey;
+    //private String secretKey;
 
-    public JwtService(){
-        secretKey = generateSecretKey();
-    }
+//    public JwtService(){
+//        secretKey = generateSecretKey();
+//    }
 
-    public String generateSecretKey() {
-        try {
-            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
-            SecretKey secretKey = keyGen.generateKey();
-            System.out.println("Secret Key : " + secretKey.toString());
-            return Base64.getEncoder().encodeToString(secretKey.getEncoded());
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error generating secret key", e);
-        }
-    }
+//    public String generateSecretKey() {
+//        try {
+//            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
+//            SecretKey secretKey = keyGen.generateKey();
+//            System.out.println("Secret Key : " + secretKey.toString());
+//            return Base64.getEncoder().encodeToString(secretKey.getEncoded());
+//        } catch (NoSuchAlgorithmException e) {
+//            throw new RuntimeException("Error generating secret key", e);
+//        }
+//    }
 
 
     public String generateToken(String username) {
@@ -53,12 +53,12 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 60*60*1000))
+                .setExpiration(new Date(System.currentTimeMillis() + 60*60*2000))
                 .signWith(getKey(), SignatureAlgorithm.HS256).compact();
     }
 
     private Key getKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
